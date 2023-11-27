@@ -243,6 +243,12 @@ WHERE continent IS NOT NULL
 GROUP BY day_date
 ORDER BY day_date, SUM(new_cases);
 
+CREATE VIEW Global_DeathRate AS
+SELECT SUM(new_cases) AS total_cases, SUM(new_deaths) AS total_deaths, SUM(new_deaths)/SUM(new_cases)*100 AS global_death_rate
+FROM covid_deaths
+WHERE continent IS NOT NULL
+ORDER BY day_date, SUM(new_cases);
+
 CREATE VIEW World_Vac_Rate AS
 SELECT dea.continent, dea.location, dea.day_date, dea.population, vac.new_vaccinations, 
 SUM(vac.new_vaccinations) OVER (PARTITION BY dea.location ORDER BY dea.location, dea.day_date) AS cumulative_vaccinations

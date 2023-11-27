@@ -154,7 +154,7 @@ FROM covid_deaths
 WHERE continent IS NOT NULL
 ORDER BY day_date, SUM(new_cases);
 
-# Looking at total population vs total vaccinations
+# Calculate total population vs total vaccinations
 SELECT dea.continent, dea.location, dea.day_date, dea.population, vac.new_vaccinations, 
 SUM(vac.new_vaccinations) OVER (PARTITION BY dea.location ORDER BY dea.location, dea.day_date) AS cumulative_vaccinations
 FROM covid_deaths AS dea 
@@ -164,7 +164,7 @@ JOIN covid_vaccinations AS vac
 WHERE dea.continent IS NOT NULL
 ORDER BY dea.location, dea.day_date;
 
-# Create a CTE to use the "cumulative_vaccinations" column in an operation
+# Creating a CTE to use the "cumulative_vaccinations" to calculate world vaccination rate
 WITH WorldVacRate (continent, location, day_date, population, new_vaccinations, cumulative_vaccinations)
 AS
 (
@@ -257,3 +257,6 @@ JOIN covid_vaccinations AS vac
 	ON dea.location = vac.location
     AND dea.day_date = vac.day_date
 WHERE dea.continent IS NOT NULL;
+
+SELECT *, (cumulative_vaccinations/population)*100 AS percent_vaccinated
+FROM world_vac_rate;
